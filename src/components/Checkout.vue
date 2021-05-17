@@ -1,12 +1,10 @@
 <template>
     <h1>Checkout</h1>
     <div class="container">
-        <form action="">
             <div class="category panel panel-default panel-info" data-toggle="collapse" data-target="#sub-checkout1">
                 <div class="panel-body"><h3>Your Order</h3></div>
             </div><br>
             <div id="sub-checkout1" class="sub-menu">
-                <h2 class="section-heading">Your order</h2>
                 <article class="dropdown panel panel-default panel-info" >
                     <ul>
                         <li>
@@ -21,7 +19,6 @@
                 <div class="panel-body"><h3>Order details</h3></div>
             </div><br>
             <div id="sub-checkout2" class="collapse sub-menu">
-                <h2 class="section-heading">Order Details</h2>
                 <article class="dropdown panel panel-default panel-info" >
                     <div class="container-fluid">
 
@@ -30,35 +27,19 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-6">
-                                <div class="btn-group">
-                                    <label for="takeout">Takeout</label>
-                                    <input id="takeout" v-model='deliveryBool' type="radio" name="deliveryBool" value="false">
-                                    <label for="delivery">Delivery</label>
-                                    <input id="delivery" v-model='deliveryBool' type="radio" name="deliveryBool" value="true">
-                                </div>
-                                    
-                                <br>
-                                <form id="address-form" class="hide">
-                                    <label for="street">Street:</label>
-                                    <input type="text" id="street" v-model='address.street'><br>
-                                    <label for="city">City:</label>
-                                    <input type="text" v-model='address.city' id="city"><br>
-                                    <label for="state">State:</label>
-                                    <input type="text" v-model='address.state' maxlength="2"><br>
-                                    <label for="zip">ZIP code:</label>
-                                    <input type="number" v-model='address.zip' id="zip">
-
-                                </form>
+                            <div class="btn-group col-lg-3 radio-group">
+                                <label class="radio-label" for="takeout">Takeout</label>
+                                <input id="takeout" class="radioButton" v-model='deliveryBool' type="radio" name="deliveryBool" value="false">
+                                <label for="delivery">Delivery</label>
+                                <input id="delivery" class="radioButton" v-model='deliveryBool' type="radio" name="deliveryBool" value="true">
                             </div>
-                            <hr>
-                            <div class="col-6">
-                                <div id="map-container" class="hide">
-                                    <Map/>
 
-                                </div>
+                            <br>
+                            <div id="map-container" class="hide col-lg-9">
+                                <GoogleMap/>
                             </div>
                         </div>
+
                     </div>
                 </article>
             </div>
@@ -67,9 +48,18 @@
                 <div class="panel-body"><h3>Payment</h3></div>
             </div><br>
             <div id="sub-checkout3" class="collapse sub-menu">
-                <h2 class="section-heading">Payment</h2>
                 <article class="dropdown panel panel-default panel-info" >
-                    <div class="col-lg-6">
+                        <!-- <stripe-checkout
+                            ref="checkoutRef"
+                            mode="payment"
+                            :pk="publishableKey"
+                            :line-items="lineItems"
+                            :success-url="successURL"
+                            :cancel-url="cancelURL"
+                            @loading="v => loading = v"
+                            />
+                            <button class="btn btn-primary" @click="submit()">Pay</button> -->
+                    <!-- <div class="col-lg-6">
 
                         <div class="btn-group">
                             <label for="cash">Cash</label>
@@ -112,25 +102,28 @@
                             <label for="securityCode">Security code: </label>
                             <input type="number" id="securityCode" maxlength="3">
                         </form>
-                    </div>
+                    </div> -->
                     <div class="col-lg-6">
                         <h4>Total: {{ formattedPrice }}</h4>
                     </div>
                 </article>
             </div>
-        </form>
     </div>
 </template>
 <script>
-import Map from './Map';
-
+import GoogleMap from './GoogleMap';
+//import { StripeCheckout } from '@vue-stripe/vue-stripe';
 export default {
     name: "Checkout",
     components: {
-        Map
+        GoogleMap,
+        //StripeCheckout
     },
     data() {
+        this.publishableKey = "pk_test_51IrFZ9APgXpqYwqKatm9jGmrpsJZRqsXptjNUQAKzcgnapVkvZIKi1JvibHzgPdAAFjtUZ402Dtf3OPFj9rP5RyG00LBcCDO9t"
         return {
+            loading: false,
+            lineItems: [],
             cardInfo: {
                 nameOnCard: '',
                 expirationMonth: 0,
@@ -138,27 +131,28 @@ export default {
                 cardNumber: 0,
                 securityCode: 0,
             },
-            address: {
-                street: '',
-                city: '',
-                state: '',
-                zip: 0,
-            },
-            // order: [],
+            order: [],
             price: 0,
             deliveryBool: "false",
             cardBool: "false",
             
-    }
-  },
+        }
+    },
+    methods: {
+        // submit() {
+        //     this.$refs.checkoutRef.redirectToCheckout();
+        // }
+    },
     computed: {
       orderList() {
-          return this.$store.getters.getOrder;
+          var orderList = this.$store.getters.getOrder
+          return orderList;
       },
       total() {
           var menu = this.$store.getters.getFoodItems;
           var total = 0;
           for(var i = 0; i < this.orderList.length; i++) {
+            //   Calculate total
               var foodId = this.orderList[i].foodId;
               var quantity = this.orderList[i].quantity;
               console.log("Menu length:" + menu.length);
@@ -180,23 +174,19 @@ export default {
     }
   },
   updated() {
-    //   Keeps hidden elements in sync
+    //   Keeps toggle-to-show elements in sync
       if(this.deliveryBool == "true") {
           document.getElementById("map-container").removeAttribute("class");
           document.getElementById("address-form").removeAttribute("class");
-          console.log("removed attribute");
       } else {
           document.getElementById("map-container").setAttribute("class", "hide");
           document.getElementById("address-form").setAttribute("class", "hide");
-          console.log("added attribute");
       }
 
       if(this.cardBool == "true") {
-          document.getElementById("cardForm").removeAttribute("class");
-          console.log("removed attribute");
+          //document.getElementById("cardForm").removeAttribute("class");
       } else {
-          document.getElementById("cardForm").setAttribute("class", "hide");
-          console.log("added attribute");
+          //document.getElementById("cardForm").setAttribute("class", "hide");
       }
   },
 
@@ -206,12 +196,23 @@ export default {
 <style scoped>
 .sub-menu {
     text-align: center;
+
 }
 
+.radio-group {
+    vertical-align: top;
+    text-align: left;
+    display: inline-block;
+}
+#map-container {
+    display: inline-block;
+}
 ul {
     list-style: none;
 }
-
+.delivery {
+    width: 25%;
+}
 .dropdown {
     padding: 20px;
     width: 40vw;
@@ -221,34 +222,40 @@ ul {
      justify-content: space-between;
     border: 2px solid rgb(63, 187, 228);
 }
-
-@media only screen and (max-width: 1190px) {
-    .category, .dropdown {
-        margin-left: 20%;
+/* @media only screen and (max-width: 1550px) {
+    .map-menu {
+            margin-left: 20%;
     }
-    .section-heading {
-        margin-left: -30vw;
+} */
+@media only screen and (max-width: 1190px) {
+    .dropdown {
+        width: 100%;
+    }
+
+    .panel-body {
+        width: 100%;
+    }
+
+
+}
+
+@media only screen and (max-width: 655px) {
+    .category {
+        width: 100%;
     }
 }
 
 .category {
     background-color: rgb(63, 187, 228);
-    width: 40vw;
+    width: 60vh;
 }
 
-#map-container {
-    width: 100%;
-    height: 300px;
-}
 
 .hide {
     display: none;
 }
 
-#map {
-    height: 60%;
-    width: 60%;
-}
+
 
 
 

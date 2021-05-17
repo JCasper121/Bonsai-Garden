@@ -20,6 +20,8 @@ export default {
     height: 25vh;
     background-position: center;
     padding-top: 100px;
+    color: black;
+    text-shadow: 1px 1px 7px white;
 
 }
 
@@ -28,7 +30,7 @@ h2 {
 }
 
 h1, h3 {
-    text-shadow: 1px 1px white;
+    
 }
 
 #nav {

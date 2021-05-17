@@ -4,7 +4,7 @@
         <div class="container">
             <!-- Appetizers section -->
             <div class="category panel panel-default panel-info" data-toggle="collapse" data-target="#sub-menu1">
-                <div class="panel-body"><h3>Appetizers</h3></div>
+                <div class="panel-body pl-2"><h3>Appetizers</h3></div>
             </div>
             <div id="sub-menu1" class="collapse sub-menu">
                 <ul>
@@ -135,7 +135,7 @@ h3 {
 }
 
 .foodItem {
-    padding: 20px;
+    padding: 2%;
     width: 40vw;
     /* text-align: left; */
     display: flex;
@@ -159,19 +159,35 @@ h3 {
 
 .category {
     background-color: rgb(63, 187, 228);
-    width: 40vw;
+    width: 60vh;
 }
 
-@media only screen and (max-width: 1190px) {
+/* @media only screen and (max-width: 1190px) {
     .category, .foodItem {
         margin-left: 20%;
     }
-}
+} */
 
 .quantity {
     margin-bottom: -20px;
 }
+@media only screen and (max-width: 655px) {
+    /* .category {
+        width: 60vh
+    } */
+    .quantity { 
+        display: flex;
+    }
 
+    .quantity icon, .quantity h3 {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .foodItem, .category {
+        width: 100%;
+    }
+}
 i {
     margin: 5px;
 }
