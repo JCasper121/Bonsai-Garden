@@ -69,7 +69,7 @@ export default {
   async created() {
     if(google == null && map == null ) {
       try {
-          const loader = new Loader('AIzaSyABEbEI3sIsaJSXiuEDhSeSbMD2ifEh8vA');
+          const loader = new Loader('API_KEY_HERE');
           google = await loader.load();
           map = new google.maps.Map(document.getElementById("GoogleMap"), {
             center: this.coordinates,
